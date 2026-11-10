@@ -1274,17 +1274,17 @@ Mesh* MeshCleanerImpl::cleanMesh(const Mesh* mesh)
     **/
     float scale = 1.0f / bnd.getExtents().abs().maxElement();
 
-    int32_t gridSize = 10000;  // Grid resolution to which vertices position will be snapped.
+    int32_t gridSize = 10000; // Grid resolution to which vertices position will be snapped.
 
     for (uint32_t i = 0; i < mesh->getVerticesCount(); ++i)
     {
-        vertices[i].p   = (vertices[i].p - fromNvShared(bnd.minimum)) * scale;
+        vertices[i].p = (vertices[i].p - fromNvShared(bnd.minimum)) * scale;
         vertices[i].p.x = std::floor(vertices[i].p.x * gridSize) / gridSize;
         vertices[i].p.y = std::floor(vertices[i].p.y * gridSize) / gridSize;
         vertices[i].p.z = std::floor(vertices[i].p.z * gridSize) / gridSize;
     }
 
-    std::vector<std::vector<RVec3> > triangleStencil(facets.size());
+    std::vector<std::vector<RVec3>> triangleStencil(facets.size());
 
     std::vector<NvVec3> facetsNormals(facets.size());
     std::vector<NvBounds3> facetBound(facets.size());
@@ -1338,7 +1338,7 @@ Mesh* MeshCleanerImpl::cleanMesh(const Mesh* mesh)
     for (uint32_t tr = 0; tr < triangleStencil.size(); ++tr)
     {
         std::vector<RVec3>& ctr = triangleStencil[tr];
-        std::vector<std::vector<cpp_rational> > perSegmentInters(ctr.size() / 2);
+        std::vector<std::vector<cpp_rational>> perSegmentInters(ctr.size() / 2);
         for (uint32_t sg1 = 6; sg1 < ctr.size(); sg1 += 2)
         {
             for (uint32_t sg2 = sg1 + 2; sg2 < ctr.size(); sg2 += 2)
@@ -1369,7 +1369,7 @@ Mesh* MeshCleanerImpl::cleanMesh(const Mesh* mesh)
                 {
                     if (perSegmentInters[csm][j] > current)
                     {
-                        current   = perSegmentInters[csm][j];
+                        current = perSegmentInters[csm][j];
                         RVec3 pnt = (ctr[i + 1] - ctr[i]) * current + ctr[i];
                         newStencil.push_back(pnt);
                         newStencil.push_back(pnt);
@@ -1383,7 +1383,7 @@ Mesh* MeshCleanerImpl::cleanMesh(const Mesh* mesh)
 
     std::vector<RVec3> finalPoints;
 
-    std::vector<std::vector<Edge> > tsten(facets.size());
+    std::vector<std::vector<Edge>> tsten(facets.size());
 
     {
         std::map<RVec3, uint32_t, RVec3Comparer> mapping;
@@ -1392,12 +1392,12 @@ Mesh* MeshCleanerImpl::cleanMesh(const Mesh* mesh)
             for (uint32_t j = 0; j < triangleStencil[tr1].size(); j += 2)
             {
 
-                auto it    = mapping.find(triangleStencil[tr1][j]);
+                auto it = mapping.find(triangleStencil[tr1][j]);
                 int32_t pt = 0;
                 if (it == mapping.end())
                 {
                     mapping[triangleStencil[tr1][j]] = finalPoints.size();
-                    pt                               = finalPoints.size();
+                    pt = finalPoints.size();
                     finalPoints.push_back(triangleStencil[tr1][j]);
                 }
                 else
@@ -1413,14 +1413,14 @@ Mesh* MeshCleanerImpl::cleanMesh(const Mesh* mesh)
                 if (it == mapping.end())
                 {
                     mapping[triangleStencil[tr1][j + 1]] = finalPoints.size();
-                    pt                                   = finalPoints.size();
+                    pt = finalPoints.size();
                     finalPoints.push_back(triangleStencil[tr1][j + 1]);
                 }
                 else
                 {
                     pt = it->second;
                 }
-                newed.e         = pt;
+                newed.e = pt;
                 bool hasNewEdge = false;
                 for (uint32_t e = 0; e < tsten[tr1].size(); ++e)
                 {
@@ -1486,7 +1486,7 @@ Mesh* MeshCleanerImpl::cleanMesh(const Mesh* mesh)
     std::vector<bool> fillingMask(trs.size(), false);
 
     std::map<std::pair<int32_t, int32_t>, int32_t> edgeMap;
-    std::vector<std::vector<int32_t> > edgeToTriangleMapping;
+    std::vector<std::vector<int32_t>> edgeToTriangleMapping;
 
     for (uint32_t i = 0; i < trs.size(); ++i)
     {
@@ -1497,7 +1497,7 @@ Mesh* MeshCleanerImpl::cleanMesh(const Mesh* mesh)
             trs[i].p[0] = -1;
             continue;
         }
-#if 0  // Filter null-area triangles.
+#if 0 // Filter null-area triangles.
         if ((finalPoints[trs[i].p[1]] - finalPoints[trs[i].p[0]]).cross(finalPoints[trs[i].p[2]] - finalPoints[trs[i].p[0]]).isZero())
         {
         trs[i].p[0] = -1;
@@ -1512,7 +1512,7 @@ Mesh* MeshCleanerImpl::cleanMesh(const Mesh* mesh)
             {
                 std::swap(es, ee);
             }
-            auto pr   = std::make_pair(es, ee);
+            auto pr = std::make_pair(es, ee);
             auto iter = edgeMap.find(pr);
             if (iter == edgeMap.end())
             {
@@ -1541,7 +1541,7 @@ Mesh* MeshCleanerImpl::cleanMesh(const Mesh* mesh)
     }
 
     std::queue<int32_t> trque;
-    float maxx   = -1000;
+    float maxx = -1000;
     int32_t best = 0;
     for (uint32_t i = 0; i < trs.size(); ++i)
     {
@@ -1564,9 +1564,9 @@ Mesh* MeshCleanerImpl::cleanMesh(const Mesh* mesh)
 
     while (!trque.empty())
     {
-        int32_t trid      = trque.front();
+        int32_t trid = trque.front();
         fillingMask[trid] = true;
-        DelTriangle& tr   = trs[trque.front()];
+        DelTriangle& tr = trs[trque.front()];
         trque.pop();
 
         for (uint32_t ed = 0; ed < 3; ++ed)
@@ -1588,32 +1588,32 @@ Mesh* MeshCleanerImpl::cleanMesh(const Mesh* mesh)
             if (tlist.size() > 2)
             {
                 int32_t bestPath = (tlist[0] == trid) ? tlist[1] : tlist[0];
-                RVec3 start      = finalPoints[trs[trid].p[ed]];
-                RVec3 axis       = finalPoints[trs[trid].p[(ed + 1) % 3]] - start;
-                RVec3 nAxis      = finalPoints[trs[trid].p[(ed + 2) % 3]] - start;
-                RVec3 normal     = axis.cross(nAxis);
+                RVec3 start = finalPoints[trs[trid].p[ed]];
+                RVec3 axis = finalPoints[trs[trid].p[(ed + 1) % 3]] - start;
+                RVec3 nAxis = finalPoints[trs[trid].p[(ed + 2) % 3]] - start;
+                RVec3 normal = axis.cross(nAxis);
 
 
                 uint32_t op = trs[bestPath].getOppPoint(trs[trid].p[ed], trs[trid].p[(ed + 1) % 3]);
 
-                RVec3 dir2           = (finalPoints[op] - start);
-                RVec3 normal2        = dir2.cross(axis);
+                RVec3 dir2 = (finalPoints[op] - start);
+                RVec3 normal2 = dir2.cross(axis);
                 cpp_rational bestDir = normal.cross(normal2).dot(axis);
                 cpp_rational oldDist = normal2.dot(normal2);
                 for (uint32_t k = 0; k < tlist.size(); ++k)
                 {
                     if (tlist[k] == trid)
                         continue;
-                    op                  = trs[tlist[k]].getOppPoint(trs[trid].p[ed], trs[trid].p[(ed + 1) % 3]);
-                    dir2                = (finalPoints[op] - start);
-                    normal2             = dir2.cross(axis);
+                    op = trs[tlist[k]].getOppPoint(trs[trid].p[ed], trs[trid].p[(ed + 1) % 3]);
+                    dir2 = (finalPoints[op] - start);
+                    normal2 = dir2.cross(axis);
                     cpp_rational newOne = normal.cross(normal2).dot(axis);
 
                     if (newOne * oldDist < bestDir * normal2.dot(normal2))
                     {
-                        oldDist  = normal2.dot(normal2);
+                        oldDist = normal2.dot(normal2);
                         bestPath = tlist[k];
-                        bestDir  = newOne;
+                        bestDir = newOne;
                     }
                 }
                 if (!fillingMask[bestPath] && edgeToTriangleMapping[trs[bestPath].n[0]].size() > 0 &&
@@ -1631,7 +1631,7 @@ Mesh* MeshCleanerImpl::cleanMesh(const Mesh* mesh)
     {
         if (!fillingMask[id])
         {
-            trs[id].p[0] = -1;  // Remove triangle
+            trs[id].p[0] = -1; // Remove triangle
         }
     }
     /////////////////////////////////////////////////////////////////////////////////////////////
@@ -1666,9 +1666,11 @@ Mesh* MeshCleanerImpl::cleanMesh(const Mesh* mesh)
         {
             for (uint32_t k = 0; k < 3; ++k)
             {
-                normalTriangles[i * 3 + k]    = vertices[edges[facets[i].firstEdgeNumber + k].s];
-                projectedTriangles[i * 3 + k] = getProjectedPointWithWinding(
-                    vertices[edges[facets[i].firstEdgeNumber + k].s].p, getProjectionDirection(facetsNormals[i])).toVec2();
+                normalTriangles[i * 3 + k] = vertices[edges[facets[i].firstEdgeNumber + k].s];
+                projectedTriangles[i * 3 + k] =
+                    getProjectedPointWithWinding(
+                        vertices[edges[facets[i].firstEdgeNumber + k].s].p, getProjectionDirection(facetsNormals[i]))
+                        .toVec2();
             }
         }
 
@@ -1676,21 +1678,25 @@ Mesh* MeshCleanerImpl::cleanMesh(const Mesh* mesh)
         {
             if (trs[i].p[0] == -1)
                 continue;
-            int32_t id             = 0;
+            int32_t id = 0;
             int32_t parentTriangle = trs[i].parentTriangle;
             float u = 0, v = 0;
             result.resize(result.size() + 1);
-            result.back().materialId     = facets[parentTriangle].materialId;
+            result.back().materialId = facets[parentTriangle].materialId;
             result.back().smoothingGroup = facets[parentTriangle].smoothingGroup;
             for (auto vert : { &result.back().a, &result.back().b, &result.back().c })
             {
-                toNvShared(vert->p)  = newVertices[trs[i].p[id]];
-                NvVec2 p = getProjectedPointWithWinding(vert->p, getProjectionDirection(facetsNormals[parentTriangle])).toVec2();
+                toNvShared(vert->p) = newVertices[trs[i].p[id]];
+                NvVec2 p =
+                    getProjectedPointWithWinding(vert->p, getProjectionDirection(facetsNormals[parentTriangle])).toVec2();
                 getBarycentricCoords(projectedTriangles[parentTriangle * 3], projectedTriangles[parentTriangle * 3 + 1],
                                      projectedTriangles[parentTriangle * 3 + 2], p, u, v);
-                vert->uv[0] = (1 - u - v) * normalTriangles[parentTriangle * 3].uv[0] +
-                              u * normalTriangles[parentTriangle * 3 + 1].uv[0] +
-                              v * normalTriangles[parentTriangle * 3 + 2].uv[0];
+                for (uint32_t j = 0; j < 4; j++)
+                {
+                    vert->uv[j] = (1 - u - v) * normalTriangles[parentTriangle * 3].uv[j] +
+                                  u * normalTriangles[parentTriangle * 3 + 1].uv[j] +
+                                  v * normalTriangles[parentTriangle * 3 + 2].uv[j];
+                }
                 vert->n = (1 - u - v) * normalTriangles[parentTriangle * 3].n +
                           u * normalTriangles[parentTriangle * 3 + 1].n + v * normalTriangles[parentTriangle * 3 + 2].n;
                 ++id;
@@ -1703,20 +1709,24 @@ Mesh* MeshCleanerImpl::cleanMesh(const Mesh* mesh)
     */
     std::vector<NvcVec3> newMeshVertices(result.size() * 3);
     std::vector<NvcVec3> newMeshNormals(result.size() * 3);
-    std::vector<NvcVec2> newMeshUvs(result.size() * 3);
+    std::vector<NvcVec2> newMeshUvs(result.size() * 3 * 4);
 
     std::vector<int32_t> newMaterialIds(result.size());
     std::vector<int32_t> newSmoothingGroups(result.size());
 
 
-    for (uint32_t i = 0; i < result.size(); ++i)
+    const uint32_t size = result.size()*3;
+    for (uint32_t j = 0; j < 4; j++)
     {
-        Vertex* arr[3] = { &result[i].a, &result[i].b, &result[i].c };
-        for (uint32_t k = 0; k < 3; ++k)
+        for (uint32_t i = 0; i < result.size(); ++i)
         {
-            newMeshVertices[i * 3 + k] = arr[k]->p;
-            newMeshNormals[i * 3 + k]  = arr[k]->n;
-            newMeshUvs[i * 3 + k]      = arr[k]->uv[0];
+            Vertex* arr[3] = { &result[i].a, &result[i].b, &result[i].c };
+            for (uint32_t k = 0; k < 3; ++k)
+            {
+                newMeshVertices[i * 3 + k] = arr[k]->p;
+                newMeshNormals[i * 3 + k] = arr[k]->n;
+                newMeshUvs[j*size + i * 3 + k] = arr[k]->uv[j];
+            }
         }
     }
     std::vector<uint32_t> serializedIndices;

@@ -131,7 +131,8 @@ int32_t shadowing01(Vertex sEdge, Vertex eEdge, const NvcVec3& p, Vertex& onEdge
         {
             vec3Lerp(sEdge.p, eEdge.p, onEdgePoint.p, t);
             vec3Lerp(sEdge.n, eEdge.n, onEdgePoint.n, t);
-            vec2Lerp(sEdge.uv[0], eEdge.uv[0], onEdgePoint.uv[0], t);
+            for (uint32_t j = 0; j < 4; j++)
+                vec2Lerp(sEdge.uv[j], eEdge.uv[j], onEdgePoint.uv[j], t);
         }
         hasOnEdge = true;
         if (onEdgePoint.p.y >= p.y)
@@ -169,7 +170,8 @@ int32_t shadowing10(Vertex sEdge, Vertex eEdge, const NvcVec3& p, Vertex& onEdge
         {
             vec3Lerp(sEdge.p, eEdge.p, onEdgePoint.p, t);
             vec3Lerp(sEdge.n, eEdge.n, onEdgePoint.n, t);
-            vec2Lerp(sEdge.uv[0], eEdge.uv[0], onEdgePoint.uv[0], t);
+            for (uint32_t j = 0; j < 4; j++)
+                vec2Lerp(sEdge.uv[j], eEdge.uv[j], onEdgePoint.uv[j], t);
         }
         hasOnEdge = true;
         if (onEdgePoint.p.y < p.y)
@@ -287,7 +289,8 @@ int32_t shadowing02(const NvcVec3& p, const Vertex* points, const Edge* edges, i
         onFacetPoint.p.x = p.x;
         onFacetPoint.p.y = p.y;
         onFacetPoint.p.z = z;
-        vec2Lerp(p1.uv[0], p2.uv[0], onFacetPoint.uv[0], t);
+        for (uint32_t j = 0; j < 4; j++)
+            vec2Lerp(p1.uv[j], p2.uv[j], onFacetPoint.uv[j], t);
         vec3Lerp(p1.n, p2.n, onFacetPoint.n, t);
 
         if (z >= p.z)
@@ -345,7 +348,8 @@ int32_t shadowing20(const NvcVec3& p, const Vertex* points, const Edge* edges, i
 
         onFacetPoint.p.z = t * vc.z + p1.p.z;
         
-        vec2Lerp(p1.uv[0], p2.uv[0], onFacetPoint.uv[0], t);
+        for (uint32_t j = 0; j < 4; j++)
+            vec2Lerp(p1.uv[j], p2.uv[j], onFacetPoint.uv[j], t);
         vec3Lerp(p1.n, p2.n, onFacetPoint.n, t);
 
         if (onFacetPoint.p.z < p.z)
@@ -438,11 +442,13 @@ int32_t edgesIntersection(const Vertex& eAs, const Vertex& eAe, const Vertex& eB
 
     intersectionA.p = bShadowingPair[1].p - div * (bShadowingPair[1].p - aShadowingPair[1].p);
     intersectionA.n = bShadowingPair[1].n - div * (bShadowingPair[1].n - aShadowingPair[1].n);
-    intersectionA.uv[0] = bShadowingPair[1].uv[0] - (bShadowingPair[1].uv[0] - aShadowingPair[1].uv[0]) * div;
+    for (uint32_t j = 0; j < 4; j++)
+        intersectionA.uv[j] = bShadowingPair[1].uv[j] - (bShadowingPair[1].uv[j] - aShadowingPair[1].uv[j]) * div;
     intersectionB.p = intersectionA.p;
     intersectionB.p.z = bShadowingPair[0].p.z - div * (bShadowingPair[0].p.z - aShadowingPair[0].p.z);
     intersectionB.n = bShadowingPair[0].n - div * (bShadowingPair[0].n - aShadowingPair[0].n);
-    intersectionB.uv[0] = bShadowingPair[0].uv[0] - (bShadowingPair[0].uv[0] - aShadowingPair[0].uv[0]) * div;
+    for (uint32_t j = 0; j < 4; j++)
+        intersectionB.uv[j] = bShadowingPair[0].uv[j] - (bShadowingPair[0].uv[j] - aShadowingPair[0].uv[j]) * div;
 
     hasPoints = true;
     return status;
@@ -526,11 +532,13 @@ int32_t edgeFacetIntersection12(const Vertex& edSt, const Vertex& edEnd, const V
     }
     intersectionA.p = bShadowingPair[1].p - div * (bShadowingPair[1].p - aShadowingPair[1].p);
     intersectionA.n = bShadowingPair[1].n - div * (bShadowingPair[1].n - aShadowingPair[1].n);
-    intersectionA.uv[0] = bShadowingPair[1].uv[0] - (bShadowingPair[1].uv[0] - aShadowingPair[1].uv[0]) * div;
+    for (uint32_t j = 0; j < 4; j++)
+        intersectionA.uv[j] = bShadowingPair[1].uv[j] - (bShadowingPair[1].uv[j] - aShadowingPair[1].uv[j]) * div;
 
     intersectionB.p = intersectionA.p;
     intersectionB.n = bShadowingPair[0].n - div * (bShadowingPair[0].n - aShadowingPair[0].n);
-    intersectionB.uv[0] = bShadowingPair[0].uv[0] - (bShadowingPair[0].uv[0] - aShadowingPair[0].uv[0]) * div;
+    for (uint32_t j = 0; j < 4; j++)
+        intersectionB.uv[j] = bShadowingPair[0].uv[j] - (bShadowingPair[0].uv[j] - aShadowingPair[0].uv[j]) * div;
 
 
     return status;
@@ -613,11 +621,13 @@ int32_t edgeFacetIntersection21(const Vertex& edSt, const Vertex& edEnd, const V
     }
     intersectionA.p = bShadowingPair[1].p - div * (bShadowingPair[1].p - aShadowingPair[1].p);
     intersectionA.n = bShadowingPair[1].n - div * (bShadowingPair[1].n - aShadowingPair[1].n);
-    intersectionA.uv[0] = bShadowingPair[1].uv[0] - (bShadowingPair[1].uv[0] - aShadowingPair[1].uv[0]) * div;
+    for (uint32_t j = 0; j < 4; j++)
+        intersectionA.uv[j] = bShadowingPair[1].uv[j] - (bShadowingPair[1].uv[j] - aShadowingPair[1].uv[j]) * div;
 
     intersectionB.p = intersectionA.p;
     intersectionB.n = bShadowingPair[0].n - div * (bShadowingPair[0].n - aShadowingPair[0].n);
-    intersectionB.uv[0] = bShadowingPair[0].uv[0] - (bShadowingPair[0].uv[0] - aShadowingPair[0].uv[0]) * div;
+    for (uint32_t j = 0; j < 4; j++)
+        intersectionB.uv[j] = bShadowingPair[0].uv[j] - (bShadowingPair[0].uv[j] - aShadowingPair[0].uv[j]) * div;
 
     return status;
 }

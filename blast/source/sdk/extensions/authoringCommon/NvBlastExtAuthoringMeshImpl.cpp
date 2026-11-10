@@ -27,23 +27,29 @@
 #define _CRT_SECURE_NO_WARNINGS
 
 #include "NvBlastExtAuthoringMeshImpl.h"
+
 #include "NvBlastExtAuthoringTypes.h"
-#include <NvBlastAssert.h>
 #include "NvMath.h"
+
+#include <NvBlastAssert.h>
 #include <NvBlastNvSharedHelpers.h>
 #include <NvBlastVolumeIntegrals.h>
+#include <algorithm>
 #include <cmath>
 #include <string.h>
 #include <vector>
-#include <algorithm>
 
 namespace Nv
 {
 namespace Blast
 {
 
-MeshImpl::MeshImpl(const NvcVec3* position, const NvcVec3* normals, const NvcVec2* uv, uint32_t verticesCount,
-                   const uint32_t* indices, uint32_t indicesCount)
+MeshImpl::MeshImpl(const NvcVec3* position,
+                   const NvcVec3* normals,
+                   const NvcVec2* uv,
+                   uint32_t verticesCount,
+                   const uint32_t* indices,
+                   uint32_t indicesCount)
 {
 
     mVertices.resize(verticesCount);
@@ -57,27 +63,32 @@ MeshImpl::MeshImpl(const NvcVec3* position, const NvcVec3* normals, const NvcVec
         {
             mVertices[i].n = normals[i];
         }
-
     }
     else
     {
         for (uint32_t i = 0; i < mVertices.size(); ++i)
         {
-            mVertices[i].n = {0, 0, 0};
+            mVertices[i].n = { 0, 0, 0 };
         }
     }
     if (uv != 0)
     {
-        for (uint32_t i = 0; i < mVertices.size(); ++i)
+        for (uint32_t j = 0; j < 4; ++j)
         {
-            mVertices[i].uv[0] = uv[i];
+            for (uint32_t i = 0; i < mVertices.size(); ++i)
+            {
+                mVertices[i].uv[j] = uv[j * mVertices.size() + i];
+            }
         }
     }
     else
     {
-        for (uint32_t i = 0; i < mVertices.size(); ++i)
+        for (uint32_t j = 0; j < 4; ++j)
         {
-            mVertices[i].uv[0] = {0, 0};
+            for (uint32_t i = 0; i < mVertices.size(); ++i)
+            {
+                mVertices[i].uv[j] = { 0, 0 };
+            }
         }
     }
     mEdges.resize(indicesCount);
@@ -98,14 +109,19 @@ MeshImpl::MeshImpl(const NvcVec3* position, const NvcVec3* normals, const NvcVec
         mFacets[facetId].firstEdgeNumber = i;
         mFacets[facetId].edgesCount = 3;
         mFacets[facetId].materialId = 0;
-        //Unassigned for now
+        // Unassigned for now
         mFacets[facetId].smoothingGroup = -1;
         facetId++;
     }
     recalculateBoundingBox();
 }
 
-MeshImpl::MeshImpl(const Vertex* vertices, const Edge* edges, const Facet* facets, uint32_t posCount, uint32_t edgesCount, uint32_t facetsCount)
+MeshImpl::MeshImpl(const Vertex* vertices,
+                   const Edge* edges,
+                   const Facet* facets,
+                   uint32_t posCount,
+                   uint32_t edgesCount,
+                   uint32_t facetsCount)
 {
     mVertices.resize(posCount);
     mEdges.resize(edgesCount);
@@ -114,7 +130,7 @@ MeshImpl::MeshImpl(const Vertex* vertices, const Edge* edges, const Facet* facet
     memcpy(mVertices.data(), vertices, sizeof(Vertex) * posCount);
     memcpy(mEdges.data(), edges, sizeof(Edge) * edgesCount);
     memcpy(mFacets.data(), facets, sizeof(Facet) * facetsCount);
-    recalculateBoundingBox();   
+    recalculateBoundingBox();
 }
 
 MeshImpl::MeshImpl(const Vertex* vertices, uint32_t count)
@@ -143,7 +159,12 @@ MeshImpl::MeshImpl(const Vertex* vertices, uint32_t count)
     recalculateBoundingBox();
 }
 
-MeshImpl::MeshImpl(const Vertex* vertices, uint32_t count, uint32_t* indices, uint32_t indexCount, void* materials, uint32_t materialStride)
+MeshImpl::MeshImpl(const Vertex* vertices,
+                   uint32_t count,
+                   uint32_t* indices,
+                   uint32_t indexCount,
+                   void* materials,
+                   uint32_t materialStride)
 {
     mVertices = std::vector<Vertex>(vertices, vertices + count);
     mEdges.resize(indexCount);
@@ -178,11 +199,19 @@ float MeshImpl::getMeshVolumeAndCentroid(NvcVec3& centroid) const
     class MeshImplQuery
     {
     public:
-        MeshImplQuery(const MeshImpl& mesh) : m_mesh(mesh) {}
+        MeshImplQuery(const MeshImpl& mesh) : m_mesh(mesh)
+        {
+        }
 
-        size_t faceCount() const { return (size_t)m_mesh.getFacetCount(); }
+        size_t faceCount() const
+        {
+            return (size_t)m_mesh.getFacetCount();
+        }
 
-        size_t vertexCount(size_t faceIndex) const { return (size_t)m_mesh.getFacet((int32_t)faceIndex)->edgesCount; }
+        size_t vertexCount(size_t faceIndex) const
+        {
+            return (size_t)m_mesh.getFacet((int32_t)faceIndex)->edgesCount;
+        }
 
         NvcVec3 vertex(size_t faceIndex, size_t vertexIndex) const
         {
@@ -276,7 +305,7 @@ void MeshImpl::recalculateBoundingBox()
     calcPerFacetBounds();
 }
 
-const NvcBounds3* MeshImpl::getFacetBound(uint32_t index) const 
+const NvcBounds3* MeshImpl::getFacetBound(uint32_t index) const
 {
     if (mPerFacetBounds.empty())
     {
@@ -342,7 +371,6 @@ void MeshImpl::setSmoothingGroup(const int32_t* smoothingGroups)
         }
     }
 }
-
 
 
 } // namespace Blast

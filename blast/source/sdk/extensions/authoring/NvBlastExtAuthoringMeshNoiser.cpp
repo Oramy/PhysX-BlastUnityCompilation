@@ -737,7 +737,8 @@ void MeshNoiser::divideEdge(int32_t id)
                 {
                     middle.p     = (mVertices[pbf[p]].p + mVertices[pbf[pnx]].p) * 0.5f;
                     middle.n     = (mVertices[pbf[p]].n + mVertices[pbf[pnx]].n) * 0.5f;
-                    middle.uv[0] = (mVertices[pbf[p]].uv[0] + mVertices[pbf[pnx]].uv[0]) * 0.5f;
+                    for (int j = 0; j < 4; j++)
+                        middle.uv[j] = (mVertices[pbf[p]].uv[j] + mVertices[pbf[pnx]].uv[j]) * 0.5f;
 
                     nv = (uint32_t)mVertices.size();
                     mVertices.push_back(middle);

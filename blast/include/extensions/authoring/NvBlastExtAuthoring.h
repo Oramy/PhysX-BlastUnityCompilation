@@ -32,6 +32,7 @@
 #define NVBLASTAUTHORING_H
 
 #include "NvBlastExtAuthoringTypes.h"
+#include <vector>
 
 namespace Nv
 {

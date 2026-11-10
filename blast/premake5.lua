@@ -481,6 +481,35 @@ group "sdk"
                 }
         filter {}
 
+    project "NvBlastExtUnity"
+        link_dependents({"NvBlast", "NvBlastGlobals", "NvBlastExtAuthoring", "NvBlastTk"})
+        blast_sdklib_standard_setup("extensions/unity")
+        includedirs {
+            "include/lowlevel",
+            "../physx/include/",
+            "../physx/include/foundation/",
+            "include/globals",
+            "include/extensions/authoring",
+            "include/extensions/serialization",
+            "include/extensions/authoringCommon",
+            "include/shared/NvFoundation",
+            "include/toolkit",
+            "source/sdk/common",
+            "source/sdk/extensions/authoring/",
+        }
+        files {
+            "source/sdk/extensions/unity/**.cpp",
+            "source/sdk/extensions/unity/**.h",
+        }
+        filter { "system:windows" }
+            disablewarnings {
+                "4267", -- conversion from 'size_t' to 'type', possible loss of data
+            }
+        filter { "system:linux"}
+            disablewarnings {
+                "strict-aliasing"
+            }
+        filter {}
     project "NvBlastExtSerialization"
         filter { "system:linux"}
             rules { "c++" }

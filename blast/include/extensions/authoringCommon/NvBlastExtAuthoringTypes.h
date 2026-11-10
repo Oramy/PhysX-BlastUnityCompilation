@@ -69,10 +69,13 @@ struct Edge
 struct Vertex
 {
     Vertex() {};
-    Vertex(const NvcVec3& p, const NvcVec3& n, const NvcVec2& _uv) : p(p), n(n) { uv[0] = _uv; }
+    Vertex(const NvcVec3& p, const NvcVec3& n, const NvcVec2* _uv) : p(p), n(n) {
+        for (int j = 0; j < 4; j++)
+            uv[j] = _uv[j];
+    }
     NvcVec3 p;      // Position
     NvcVec3 n;      // Normal
-    NvcVec2 uv[1];  // UV-coordinates array, currently supported only one UV coordinate.
+    NvcVec2 uv[4];  // UV-coordinates array, currently supported only one UV coordinate.
 };
 
 /**
